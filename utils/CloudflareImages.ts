@@ -7,7 +7,7 @@ function cfResponse<T extends z.Schema>(resultSchema: T) {
         z.object({
           code: z.number().int(),
           message: z.string(),
-        })
+        }),
       )
       .optional()
       .nullable(),
@@ -16,7 +16,7 @@ function cfResponse<T extends z.Schema>(resultSchema: T) {
         z.object({
           code: z.number().int(),
           message: z.string(),
-        })
+        }),
       )
       .optional()
       .nullable(),
@@ -47,9 +47,9 @@ export const listImagesPaginatedResultSchema = cfResponse(
         requireSignedURLs: z.boolean(),
         uploaded: z.string().datetime(),
         variants: z.array(z.string()),
-      })
+      }),
     ),
-  })
+  }),
 );
 
 export type ListImagesPaginatedResult = z.infer<
@@ -73,10 +73,9 @@ export default class CloudflareImages {
       throw new Error("No Cloudflare account ID provided");
     }
     const email = opts.email ?? process.env.CLOUDFLARE_EMAIL;
-    const apiToken =
-      opts.apiToken ??
-      process.env.CLOUDFLARE_API_TOKEN ??
-      process.env.CLOUDFLARE_API_KEY;
+    const apiToken = opts.apiToken
+      ?? process.env.CLOUDFLARE_API_TOKEN
+      ?? process.env.CLOUDFLARE_API_KEY;
     if (!apiToken) {
       throw new Error("No Cloudflare API token provided");
     }
@@ -93,7 +92,7 @@ export default class CloudflareImages {
   }
 
   async listImagesPaginated(
-    params: ListImagesPaginatedInput = {}
+    params: ListImagesPaginatedInput = {},
   ): Promise<ListImagesPaginatedResult> {
     let queryParams = new URLSearchParams();
     if (params.continuationToken) {
@@ -106,12 +105,10 @@ export default class CloudflareImages {
       queryParams.set("sort_order", params.sortOrder);
     }
     const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${
-        this.accountID
-      }/images/v2?${queryParams.toString()}`,
+      `https://api.cloudflare.com/client/v4/accounts/${this.accountID}/images/v2?${queryParams.toString()}`,
       {
         headers: this.authHeaders,
-      }
+      },
     );
     const json = await response.json();
     json.statusCode = response.status;
@@ -121,7 +118,7 @@ export default class CloudflareImages {
           `Error occurred while querying Cloudflare: (${json.errors[0].code}) ${json.errors[0].message}`,
           {
             cause: JSON.stringify(json),
-          }
+          },
         );
       } else {
         throw new Error(`Unknown error occurred while querying Cloudflare`, {

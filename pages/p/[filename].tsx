@@ -1,17 +1,18 @@
-import type { GetStaticProps, NextPage } from 'next'
-import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-import Carousel from '../../components/Carousel'
-import { getCachedImageProps, getCachedResults } from '../../utils/cachedImages'
-import { one } from '../../utils/one'
-import type { ImageProps } from '../../utils/types'
-import { useLastViewedPhoto } from '../../utils/useLastViewedPhoto'
+import type { GetStaticProps, NextPage } from "next";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
+import Carousel from "../../components/Carousel";
+import { getCachedImageProps, getCachedResults } from "../../utils/cachedImages";
+import { one } from "../../utils/one";
+import type { ImageProps } from "../../utils/types";
+import { useLastViewedPhoto } from "../../utils/useLastViewedPhoto";
 
 const Home: NextPage = ({ currentPhoto }: { currentPhoto: ImageProps }) => {
-  const router = useRouter()
-  const { filename } = router.query
-  const [, setLastViewedPhoto] = useLastViewedPhoto()
+  const router = useRouter();
+  const { filename } = router.query;
+  const [, setLastViewedPhoto] = useLastViewedPhoto();
 
   useEffect(() => {
     setLastViewedPhoto(one(filename));
@@ -28,33 +29,33 @@ const Home: NextPage = ({ currentPhoto }: { currentPhoto: ImageProps }) => {
         <Carousel currentPhoto={currentPhoto} />
       </main>
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const images = await getCachedImageProps();
 
-  const currentPhoto = images.find((img) => img.filename === context.params.filename)
+  const currentPhoto = images.find((img) => img.filename === context.params.filename);
 
   return {
     props: {
       currentPhoto,
     },
-  }
-}
+  };
+};
 
 export async function getStaticPaths() {
   const results = await getCachedResults();
   const paths = results.result.images.map((image) => ({
     params: {
       filename: image.filename,
-    }
-  }))
+    },
+  }));
 
   return {
     paths,
     fallback: false,
-  }
+  };
 }

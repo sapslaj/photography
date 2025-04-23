@@ -34,23 +34,23 @@ export async function getCachedImageProps(): Promise<ImageProps[]> {
 
   const images: ImageProps[] = results.result.images.map((resultImage, index) => ({
     index,
-    id: resultImage.id || '',
-    filename: resultImage.filename || '',
+    id: resultImage.id || "",
+    filename: resultImage.filename || "",
     variants: {
-      blurplaceholder: resultImage.variants.filter((variant) => variant.endsWith('blurplaceholder'))[0],
-      large: resultImage.variants.filter((variant) => variant.endsWith('large'))[0],
-      preview: resultImage.variants.filter((variant) => variant.endsWith('preview'))[0],
-      thumbnail: resultImage.variants.filter((variant) => variant.endsWith('thumbnail'))[0],
+      blurplaceholder: resultImage.variants.filter((variant) => variant.endsWith("blurplaceholder"))[0],
+      large: resultImage.variants.filter((variant) => variant.endsWith("large"))[0],
+      preview: resultImage.variants.filter((variant) => variant.endsWith("preview"))[0],
+      thumbnail: resultImage.variants.filter((variant) => variant.endsWith("thumbnail"))[0],
     },
   }));
 
   const blurImagePromises = images.map((image: ImageProps) => {
     return getBase64ImageUrl(image);
-  })
-  const imagesWithBlurDataUrls = await Promise.all(blurImagePromises)
+  });
+  const imagesWithBlurDataUrls = await Promise.all(blurImagePromises);
 
   for (let i = 0; i < images.length; i++) {
-    images[i].blurDataUrl = imagesWithBlurDataUrls[i]
+    images[i].blurDataUrl = imagesWithBlurDataUrls[i];
   }
 
   cachedImageProps = images;

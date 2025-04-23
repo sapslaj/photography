@@ -1,29 +1,30 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useEffect, useRef } from 'react'
-import Modal from '../components/Modal'
-import { getCachedImageProps } from '../utils/cachedImages'
-import type { ImageProps } from '../utils/types'
-import { useLastViewedPhoto } from '../utils/useLastViewedPhoto'
-import { one } from '../utils/one';
+import type { NextPage } from "next";
+import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useRef } from "react";
+
+import Modal from "../components/Modal";
+import { getCachedImageProps } from "../utils/cachedImages";
+import { one } from "../utils/one";
+import type { ImageProps } from "../utils/types";
+import { useLastViewedPhoto } from "../utils/useLastViewedPhoto";
 
 const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
-  const router = useRouter()
-  const { filename } = router.query
-  const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto()
+  const router = useRouter();
+  const { filename } = router.query;
+  const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto();
 
-  const lastViewedPhotoRef = useRef<HTMLAnchorElement>(null)
+  const lastViewedPhotoRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     // This effect keeps track of the last viewed photo in the modal to keep the index page in sync when the user navigates back
     if (lastViewedPhoto && !filename) {
-      lastViewedPhotoRef.current.scrollIntoView({ block: 'center' })
-      setLastViewedPhoto(null)
+      lastViewedPhotoRef.current.scrollIntoView({ block: "center" });
+      setLastViewedPhoto(null);
     }
-  }, [filename, lastViewedPhoto, setLastViewedPhoto])
+  }, [filename, lastViewedPhoto, setLastViewedPhoto]);
 
   return (
     <>
@@ -43,7 +44,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
           <Modal
             images={images}
             onClose={() => {
-              setLastViewedPhoto(one(filename))
+              setLastViewedPhoto(one(filename));
             }}
           />
         )}
@@ -70,7 +71,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
               <Image
                 alt="photo"
                 className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110"
-                style={{ transform: 'translate3d(0, 0, 0)' }}
+                style={{ transform: "translate3d(0, 0, 0)" }}
                 placeholder="blur"
                 blurDataURL={blurDataUrl}
                 src={variants.preview}
@@ -86,8 +87,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
         </div>
       </main>
       <footer className="p-6 text-center text-white/80 sm:p-12">
-        &copy; 2024 Justin Roberson, et al.
-        | Images:{' '}
+        &copy; 2024 Justin Roberson, et al. | Images:{" "}
         <a
           href="https://creativecommons.org/licenses/by/4.0/"
           target="_blank"
@@ -96,7 +96,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
         >
           CC-BY-4.0
         </a>
-        | Code:{' '}
+        | Code:{" "}
         <a
           href="https://github.com/sapslaj/photography/blob/main/LICENSE"
           target="_blank"
@@ -107,10 +107,10 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
         </a>
       </footer>
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
 
 export async function getStaticProps() {
   const images = await getCachedImageProps();
@@ -119,5 +119,5 @@ export async function getStaticProps() {
     props: {
       images,
     },
-  }
+  };
 }

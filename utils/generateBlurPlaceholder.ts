@@ -6,7 +6,7 @@ import type { ImageProps } from "./types";
 const cache = new Map<ImageProps, string>();
 
 export default async function getBase64ImageUrl(
-  image: ImageProps
+  image: ImageProps,
 ): Promise<string> {
   let url = cache.get(image);
   if (url) {
@@ -20,14 +20,16 @@ export default async function getBase64ImageUrl(
         plugins: [imageminJpegtran()],
       });
 
-      url = `data:image/jpeg;base64,${Buffer.from(minified).toString(
-        "base64"
-      )}`;
+      url = `data:image/jpeg;base64,${
+        Buffer.from(minified).toString(
+          "base64",
+        )
+      }`;
       cache.set(image, url);
       return url;
     } catch (e) {
       console.warn(
-        `failed to generate base64 image URL for image ${image.filename}: ${e} (attempt ${attempt})`
+        `failed to generate base64 image URL for image ${image.filename}: ${e} (attempt ${attempt})`,
       );
       await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
       if (attempt == 5) {
