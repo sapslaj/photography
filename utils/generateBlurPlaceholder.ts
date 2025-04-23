@@ -1,6 +1,3 @@
-import imagemin from "imagemin";
-import imageminJpegtran from "imagemin-jpegtran";
-
 import type { ImageProps } from "./types";
 
 const cache = new Map<ImageProps, string>();
@@ -16,15 +13,9 @@ export default async function getBase64ImageUrl(
     try {
       const response = await fetch(image.variants.blurplaceholder);
       const buffer = await response.arrayBuffer();
-      const minified = await imagemin.buffer(Buffer.from(buffer), {
-        plugins: [imageminJpegtran()],
-      });
+      const b64 = Buffer.from(buffer).toString("base64");
 
-      url = `data:image/jpeg;base64,${
-        Buffer.from(minified).toString(
-          "base64",
-        )
-      }`;
+      url = `data:image/jpeg;base64,${b64}`;
       cache.set(image, url);
       return url;
     } catch (e) {
