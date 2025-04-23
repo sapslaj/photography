@@ -57,30 +57,38 @@ export type ListImagesPaginatedResult = z.infer<
 >;
 
 export default class CloudflareImages {
-  public accountID: string;
-  public apiToken: string;
-  public email: string;
+  accountID: string;
+  authHeaders: Record<string, string>;
 
   constructor(opts?: {
     accountID?: string;
     apiToken?: string;
     email?: string;
   }) {
-    if (opts && opts.accountID) {
-      this.accountID = opts.accountID;
-    } else {
-      this.accountID = process.env.CLOUDFLARE_ACCOUNT_ID;
+    if (opts === undefined) {
+      opts = {};
     }
-    if (opts && opts.apiToken) {
-      this.apiToken = opts.apiToken;
-    } else {
-      this.apiToken =
-        process.env.CLOUDFLARE_API_KEY ?? process.env.CLOUDFLARE_API_TOKEN;
+    this.accountID = opts.accountID ?? process.env.CLOUDFLARE_ACCOUNT_ID;
+    if (!this.accountID) {
+      throw new Error("No Cloudflare account ID provided");
     }
-    if (opts && opts.email) {
-      this.email = opts.email;
+    const email = opts.email ?? process.env.CLOUDFLARE_EMAIL;
+    const apiToken =
+      opts.apiToken ??
+      process.env.CLOUDFLARE_API_TOKEN ??
+      process.env.CLOUDFLARE_API_KEY;
+    if (!apiToken) {
+      throw new Error("No Cloudflare API token provided");
+    }
+    if (email) {
+      this.authHeaders = {
+        "X-Auth-Email": email,
+        "X-Auth-Key": apiToken,
+      };
     } else {
-      this.email = process.env.CLOUDFLARE_EMAIL;
+      this.authHeaders = {
+        Authorization: `Bearer ${apiToken}`,
+      };
     }
   }
 
@@ -102,10 +110,7 @@ export default class CloudflareImages {
         this.accountID
       }/images/v2?${queryParams.toString()}`,
       {
-        headers: {
-          "X-Auth-Email": this.email,
-          "X-Auth-Key": this.apiToken,
-        },
+        headers: this.authHeaders,
       }
     );
     const json = await response.json();
